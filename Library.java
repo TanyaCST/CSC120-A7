@@ -3,7 +3,17 @@
 import java.util.*;
 
 public class Library extends Building {
+  
   private Hashtable<String, Boolean> collection;
+
+  /**
+   * constructor
+   * overloading constructor: create a library without name and address
+   */
+  public Library(){
+    this.collection = new Hashtable<String, Boolean>();
+    System.out.println("You have built a library: 📖");
+  }
 
   /**
    * Constructor: Create a library
@@ -23,6 +33,17 @@ public class Library extends Building {
      */
     public void addTitle(String title){
       this.collection.put(title, true);
+    }
+
+    /**
+     * To put a list of book into the library collection
+     * @param titleList: a list of titles of books put into the library
+     */
+    public void addTitle(ArrayList<String> titleList){
+      for(int i = 0; i < titleList.size(); i++){
+        String title = titleList.get(i);
+        this.collection.put(title, true);
+      }
     }
 
     /**
@@ -48,10 +69,15 @@ public class Library extends Building {
     
     public void checkOut(String title){
       if (this.collection.keySet().contains(title)){
-        this.collection.replace(title, false);
+        if(this.collection.get(title)){
+          this.collection.replace(title, false);
+        }
+        else{
+          throw new RuntimeException("Sorry. " + title + " is borrowed.");
+        }
       }
       else{
-        throw new NullPointerException();
+        throw new RuntimeException("Sorry. " + title + " is not added to the library.");
       }
     }
     
@@ -61,10 +87,15 @@ public class Library extends Building {
      */
     public void returnBook(String title){
       if (this.collection.keySet().contains(title)){
-        this.collection.replace(title, true);
+        if(this.collection.get(title) == false){
+          this.collection.replace(title, true);
+        }
+        else{
+          throw new RuntimeException("Sorry. " + title + " is already returned. Are you sure you borrowed it from our library?");
+        }
       }
       else{
-        throw new NullPointerException();
+        throw new RuntimeException("Sorry. " + title + " is not implemented to our library.");
       }
     }
 
@@ -74,12 +105,7 @@ public class Library extends Building {
      * @return
      */
     public boolean containsTitle(String title){
-      if (this.collection.keySet().contains(title)){
-        return true;
-      }
-      else{
-        return false;
-      }
+      return this.collection.keySet().contains(title);
     } 
 
     /**
@@ -88,21 +114,14 @@ public class Library extends Building {
      * @return
      */
     public boolean isAvailable(String title){
-      if (containsTitle(title) == true) {
-        if(this.collection.get(title) == true){
-          return true;
-        }
-        else{
-          return false;
-        }
-      }
-      else{
+      if (!containsTitle(title)) {
         throw new NullPointerException();
       }
+      return this.collection.get(title);
     }
 
      /**
-     * Print outthe entire collection with check out status
+     * Print out the entire collection with check out status
      */
     public void printCollection(){
       Set<String> titles = collection.keySet();
@@ -112,25 +131,7 @@ public class Library extends Building {
     } 
 
     /**
-     * 
-     */
-    public String toString(){
-      return this.name + " is a " + this.nFloors + "-story library located at " + this.address;
-    }
-
-    /**
-     * 
-     */
-    public void showOptions() {
-      System.out.println("Available options at " + 
-                         this.name + 
-                         ":\n + enter() \n + exit() \n + goUp() \n + goDown()\n + goToFloor(n) + " +
-                         "addTitle(name) + removeTitle(name) + checkOut(title) + returnBook(title) + \\n" + //
-                         "containsTitle(title) + isAvailable(title) + printCollection()");
-    }
-
-    /**
-     * 
+     * Go to floors that are not adjacent
      */
     public void goToFloor(int floorNum) {
       if (this.activeFloor == -1) {
@@ -141,7 +142,15 @@ public class Library extends Building {
       }
       System.out.println("You are now on floor #" + floorNum + " of " + this.name);
       this.activeFloor = floorNum;
-  }
+    }
+
+    /**
+     * show options in both Building class and Library class
+     */
+    public void showOptions() {
+      super.showOptions();
+      System.out.println("\n + addTitle() \n + removeTitle() \n + checkOut() \n + returnBook()\n + containsTitle()\n + isAvailable()\n + printCollection()\n + goToFloor(n)");
+    }
 
     /**
      * Main methods
